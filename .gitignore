@@ -1,0 +1,41 @@
+
+
+f
+q
+cd
+# Создайте файл .gitignore
+cat > .gitignore << EOF
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go workspace files
+go.sum
+go.mod
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Application specific
+pass.json
+*.json
+data/
+tmp/
