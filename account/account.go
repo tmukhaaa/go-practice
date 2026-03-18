@@ -4,7 +4,6 @@ import (
 
 	"demo/password/files"
 
-	"encoding/json"
 	"errors"
 	"fmt"
 	"math/rand/v2"
@@ -73,16 +72,9 @@ func (acc *Account) getPassword(n int) {
 
 func FindAccount() {
 	var url string
-	var vault Vault
 	fmt.Print("Введите URL-адрес по которому хотите совершить поиск: ")
 	fmt.Scan(&url)
-	db := files.NewJsonDb("pass.json")
-	file, err := db.Read()
-	if err != nil {
-		fmt.Println("Ошибка в записи")
-		return 
-	}
-	err = json.Unmarshal(file, &vault)
+	vault := NewVault(*files.NewJsonDb("pass.json"))
 	acc := vault.FindVault(url)
 	for _, acc := range acc {
 		acc.PrintStruct()
@@ -91,13 +83,6 @@ func FindAccount() {
 
 func DeleteAccount() {
 	url := GetInfo("Введите URL адрес:")
-	var vault Vault
-	db := files.NewJsonDb("pass.json")
-	file , err := db.Read()
-	if err != nil {
-		fmt.Println("Ошибка в удалении")
-		return
-	}
-	err = json.Unmarshal(file, &vault)
+	vault := NewVault(*files.NewJsonDb("pass.json"))
 	vault.DeleteVault(url)
 }

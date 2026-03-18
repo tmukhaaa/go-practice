@@ -13,45 +13,60 @@ type Vault struct {
 	UpdatedAt time.Time  `json:"UpdatedAt"`
 }
 
-func NewVault() *Vault {
-	db := files.NewJsonDb("pass.json")
+type VaultWithDb struct {
+	Vault
+	db files.JsonDb
+}
+
+func NewVault(db files.JsonDb) *VaultWithDb {
 	file, err := db.Read()
 	if err != nil {
-		return &Vault{
-			Accounts:  []*Account{},
-			UpdatedAt: time.Now(),
+		return &VaultWithDb{
+			Vault: Vault{
+				Accounts:  []*Account{},
+				UpdatedAt: time.Now(),
+			},
+			db : db,
+			
 		}
 	}
-	var vault Vault
+	var vault VaultWithDb
 	err = json.Unmarshal(file, &vault)
+	vault.db = db
 	if err != nil {
 		fmt.Println("не удалось преобразовать файл")
-		return nil
+		return &VaultWithDb{
+			Vault: Vault{
+				Accounts:  []*Account{},
+				UpdatedAt: time.Now(),
+			},
+			db : db,
+			
+		}
 	}
 	return &vault
 }
 
-func (vault *Vault) CreateVault(acc *Account) {
-	vault.Accounts = append(vault.Accounts, acc)
-	vault.UpdatedAt = time.Now()
+func (vault *VaultWithDb) CreateVault(acc *Account) {
+	vault.Vault.Accounts = append(vault.Vault.Accounts, acc)
+	vault.Vault.UpdatedAt = time.Now()
 	file, err := vault.ToVault()
 	if err != nil {
 		fmt.Println("не удалость преобразовать в байты")
 		return
 	}
-	db := files.NewJsonDb("pass.json")
-	db.Write(file)
+	vault.db.Write(file)
 }
 
-func (vault *Vault) ToVault() ([]byte, error) {
-	file, err := json.Marshal(vault)
+func (vault *VaultWithDb) ToVault() ([]byte, error) {
+	file, err := json.Marshal(*vault)
 	if err != nil {
 		return nil, err
 	}
 	return file, nil
 }
 
-func (vault *Vault) FindVault(url string) []Account {
+func (vault *VaultWithDb) FindVault(url string) []Account {
 	var arr []Account
 	for _, value := range vault.Accounts {
 		if strings.Contains(value.Url, url) {
@@ -61,7 +76,7 @@ func (vault *Vault) FindVault(url string) []Account {
 	return arr
 }
 
-func (vault *Vault) DeleteVault(url string) {
+func (vault *VaultWithDb) DeleteVault(url string) {
 	NewVault := make([]*Account, 0, len(vault.Accounts))
 	for _, value := range vault.Accounts {
 		if value.Url != url {
@@ -72,6 +87,5 @@ func (vault *Vault) DeleteVault(url string) {
 	vault.Accounts = NewVault
 	vault.UpdatedAt = time.Now()
 	file, _ := vault.ToVault()
-	db := files.NewJsonDb("pass.json")
-	db.Write(file)
+	vault.db.Write(file)
 }

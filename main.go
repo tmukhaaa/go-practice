@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"demo/password/account"
-
-
+	"demo/password/files"
+	"fmt"
 )
 
 
@@ -49,7 +48,7 @@ func createAccount(){
 		fmt.Println(err)
 		return
 	}
-	vault := account.NewVault()
+	vault := account.NewVault(*files.NewJsonDb("pass.json"))
 	vault.CreateVault(account1)
 }
 

@@ -28,9 +28,10 @@ func (db *JsonDb) Read() ([]byte, error) {
 func (db *JsonDb) Write(content []byte){
 	file, err := os.Create(db.filename)
 	if err != nil {
-		fmt.Println("Ошибка в создании файла!")
+		fmt.Println("Ошибка в создании файла!", err)
 		return
 	}
+	defer file.Close()
 	_, err = file.Write(content)
 	if err != nil {
 		file.Close()
@@ -38,5 +39,5 @@ func (db *JsonDb) Write(content []byte){
 		return 
 	}
 	fmt.Println("Запись прошла успешно!")
-	file.Close()
+	
 }
