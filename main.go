@@ -17,6 +17,7 @@ func menu() {
 	var input int
 itteration:
 	for {
+		vault := account.NewVault(files.NewJsonDb("pass.json"))
 		fmt.Println(`1. Создать аккаунт
 2. Найти аккаунт
 3. Удалить аккаунт
@@ -28,9 +29,9 @@ itteration:
 		case 1:
 			createAccount()
 		case 2:
-			account.FindAccount()
+			account.FindAccount(*vault)
 		case 3:
-			account.DeleteAccount()
+			account.DeleteAccount(*vault)
 		case 4:
 			break itteration
 		default:
@@ -48,7 +49,7 @@ func createAccount(){
 		fmt.Println(err)
 		return
 	}
-	vault := account.NewVault(*files.NewJsonDb("pass.json"))
+	vault := account.NewVault(files.NewJsonDb("pass.json"))
 	vault.CreateVault(account1)
 }
 

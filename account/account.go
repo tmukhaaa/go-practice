@@ -2,7 +2,7 @@ package account
 
 import (
 
-	"demo/password/files"
+	
 
 	"errors"
 	"fmt"
@@ -70,19 +70,17 @@ func (acc *Account) getPassword(n int) {
 	acc.Password = string(symbArray)
 }
 
-func FindAccount() {
+func FindAccount(vault VaultWithDb) {
 	var url string
 	fmt.Print("Введите URL-адрес по которому хотите совершить поиск: ")
 	fmt.Scan(&url)
-	vault := NewVault(*files.NewJsonDb("pass.json"))
 	acc := vault.FindVault(url)
 	for _, acc := range acc {
 		acc.PrintStruct()
 	}
 }
 
-func DeleteAccount() {
+func DeleteAccount(vault VaultWithDb) {
 	url := GetInfo("Введите URL адрес:")
-	vault := NewVault(*files.NewJsonDb("pass.json"))
 	vault.DeleteVault(url)
 }

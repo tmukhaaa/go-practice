@@ -1,12 +1,16 @@
 package account
 
 import (
-	"demo/password/files"
+	"demo/password/output"
 	"encoding/json"
-	"fmt"
 	"strings"
 	"time"
 )
+
+type Db interface {
+	Read() ([]byte, error)
+	Write(content []byte)
+}
 
 type Vault struct {
 	Accounts  []*Account `json:"Accounts"`
@@ -15,10 +19,10 @@ type Vault struct {
 
 type VaultWithDb struct {
 	Vault
-	db files.JsonDb
+	db Db
 }
 
-func NewVault(db files.JsonDb) *VaultWithDb {
+func NewVault(db Db) *VaultWithDb {
 	file, err := db.Read()
 	if err != nil {
 		return &VaultWithDb{
@@ -34,7 +38,7 @@ func NewVault(db files.JsonDb) *VaultWithDb {
 	err = json.Unmarshal(file, &vault)
 	vault.db = db
 	if err != nil {
-		fmt.Println("не удалось преобразовать файл")
+		output.ErrorOutput("не удалось преобразовать файл")
 		return &VaultWithDb{
 			Vault: Vault{
 				Accounts:  []*Account{},
@@ -52,7 +56,7 @@ func (vault *VaultWithDb) CreateVault(acc *Account) {
 	vault.Vault.UpdatedAt = time.Now()
 	file, err := vault.ToVault()
 	if err != nil {
-		fmt.Println("не удалость преобразовать в байты")
+		output.ErrorOutput("не удалость преобразовать в байты")
 		return
 	}
 	vault.db.Write(file)
